@@ -6,6 +6,7 @@ import { testingRoute } from "./constant/test.route";
 import { corsAllowOrigin } from "./constant/common";
 import notFound from "./constant/not.found";
 import cookieParser from "cookie-parser";
+import { rootRouter } from "./app/routes";
 const app = express();
 
 app.use(cors(corsAllowOrigin));
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", testingRoute);
-// app.use("/api/v1", rootRouter);
+app.use("/api", rootRouter);
 // app.use(globalErrorHandler);
 
 app.use(notFound);
