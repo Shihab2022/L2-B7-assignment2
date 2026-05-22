@@ -20,7 +20,17 @@ const createIssues = catchAsync(async (req: Request, res: Response) => {
     data: {},
   });
 });
+const getIssueById = catchAsync(async (req: Request, res: Response) => {
+  const result = await IssuesServices.getIssueById("1");
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Issue retrieved successfully",
+    data: result,
+  });
+});
 
 export const IssuesController = {
   createIssues,
+  getIssueById,
 };

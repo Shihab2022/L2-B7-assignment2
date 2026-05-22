@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-// import { rootRouter } from "./app/routes";
 // import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import { testingRoute } from "./constant/test.route";
 import { corsAllowOrigin } from "./constant/common";
