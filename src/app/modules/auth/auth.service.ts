@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import config from "../../config";
 import { CONTRIBUTOR } from "../../../constant/common";
 import { generateJwtToken } from "../../../utils/jwtHelper";
-import { Secret } from "jsonwebtoken";
+import { Secret, SignOptions } from "jsonwebtoken";
 
 const signUpUser = async (payload: SIGN_UP_USER_PAYLOAD) => {
   const { email, password, role = CONTRIBUTOR, name } = payload;
@@ -80,7 +80,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   const accessToken = generateJwtToken(
     tokenData,
     config.jwt_access_secret as Secret,
-    config.jwt_access_expire_in as string,
+    config.jwt_access_expire_in as SignOptions["expiresIn"],
   );
 
   return {
