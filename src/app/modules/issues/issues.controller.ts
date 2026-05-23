@@ -32,9 +32,41 @@ const getIssueById = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const updateIssueById = catchAsync(
+  async (req: Request & { user?: any }, res: Response) => {
+    const issueId = req.params.id;
+    const result = await IssuesServices.updateIssueById(
+      issueId as string,
+      req.user,
+      req.body,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+        message: "Issue updated successfully",
+      success: true,
+      data: result,
+    });
+  },
+);
+const deleteIssueById = catchAsync(
+  async (req: Request & { user?: any }, res: Response) => {
+    const issueId = req.params.id;
+    const result = await IssuesServices.deleteIssueById(
+      issueId as string,
+      req.user,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      data: result,
+    });
+  },
+);
 
 export const IssuesController = {
   createIssues,
   getIssueById,
   getAllIssues,
+  updateIssueById,
+  deleteIssueById,
 };

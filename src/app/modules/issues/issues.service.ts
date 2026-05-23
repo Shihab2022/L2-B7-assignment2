@@ -1,5 +1,7 @@
 import { pool } from "../../../db";
+import AppError from "../../errors/ApiError";
 import { ISSUES_PAYLOAD } from "../../types";
+import httpStatus from "http-status";
 
 const createIssues = async (payload: ISSUES_PAYLOAD, user: any) => {
   const insertQuery = `
@@ -63,8 +65,81 @@ WHERE
   const result = await pool.query(query, [id]);
   return result.rows[0];
 };
+
+const updateIssueById = async (id: string, user: any, updates: any) => {
+  const keys = Object.keys(updates);
+  if (keys.length === 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, "No data provided for update");
+  }
+  const query = `
+SELECT 
+  *
+FROM issues 
+WHERE
+  id = $1
+`;
+
+  const result = await pool.query(query, [id]);
+  const issue = result.rows[0];
+  if (!issue) {
+    throw new AppError(httpStatus.NOT_FOUND, "Issue not found");
+  }
+  let issueUpdateStatus = false;
+  if (issue.reporter_id !== user.id) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not the reporter of this issue",
+    );
+  }
+  if (user.role === "maintainer") {
+    issueUpdateStatus = true;
+  }
+  if (
+    user.role === "contributor" &&
+    issue.status === "open" &&
+    issue.reporter_id === user.id
+  ) {
+    issueUpdateStatus = true;
+  }
+
+  if (!issueUpdateStatus) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to update this issue",
+    );
+  } else {
+    const setClause = keys
+      .map((key, index) => `${key} = $${index + 1}`)
+      .join(", ");
+
+    const values = Object.values(updates);
+    values.push(id);
+
+    // 3. Execute (Example using 'pg' for PostgreSQL)
+    const query = `
+    UPDATE issues 
+    SET ${setClause} 
+    WHERE id = $${values.length} 
+    RETURNING *;
+  `;
+
+    const result = await pool.query(query, values);
+    return result.rows[0];
+  }
+};
+const deleteIssueById = async (id: string, user: any) => {
+  if (user.role !== "maintainer") {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Only maintainers can delete issues",
+    );
+  }
+  // Implement the logic to delete an issue by its ID
+};
 export const IssuesServices = {
   createIssues,
   getAllIssues,
   getIssueById,
+  updateIssueById,
+  deleteIssueById,
 };
