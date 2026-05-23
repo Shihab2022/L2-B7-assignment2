@@ -1,3 +1,4 @@
+import { CONTRIBUTOR, MAINTAINER } from "../../../constant/common";
 import { pool } from "../../../db";
 import AppError from "../../errors/ApiError";
 import { ISSUES_PAYLOAD } from "../../types";
@@ -91,11 +92,11 @@ WHERE
       "You are not the reporter of this issue",
     );
   }
-  if (user.role === "maintainer") {
+  if (user.role === MAINTAINER) {
     issueUpdateStatus = true;
   }
   if (
-    user.role === "contributor" &&
+    user.role === CONTRIBUTOR &&
     issue.status === "open" &&
     issue.reporter_id === user.id
   ) {
@@ -128,13 +129,17 @@ WHERE
   }
 };
 const deleteIssueById = async (id: string, user: any) => {
-  if (user.role !== "maintainer") {
+  if (user.role !== MAINTAINER) {
     throw new AppError(
       httpStatus.FORBIDDEN,
       "Only maintainers can delete issues",
     );
   }
-  // Implement the logic to delete an issue by its ID
+
+  const query = `
+    DELETE FROM issues WHERE id = $1`;
+  await pool.query(query, [id]);
+  return {};
 };
 export const IssuesServices = {
   createIssues,

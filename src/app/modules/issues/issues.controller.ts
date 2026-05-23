@@ -42,7 +42,7 @@ const updateIssueById = catchAsync(
     );
     sendResponse(res, {
       statusCode: httpStatus.OK,
-        message: "Issue updated successfully",
+      message: "Issue updated successfully",
       success: true,
       data: result,
     });
@@ -58,7 +58,7 @@ const deleteIssueById = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      data: result,
+      message: "Issue deleted successfully",
     });
   },
 );
