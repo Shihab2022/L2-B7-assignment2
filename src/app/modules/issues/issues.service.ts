@@ -88,7 +88,7 @@ WHERE
   let issueUpdateStatus = false;
   if (issue.reporter_id !== user.id) {
     throw new AppError(
-      httpStatus.FORBIDDEN,
+      httpStatus.UNAUTHORIZED,
       "You are not the reporter of this issue",
     );
   }
@@ -105,7 +105,7 @@ WHERE
 
   if (!issueUpdateStatus) {
     throw new AppError(
-      httpStatus.FORBIDDEN,
+      httpStatus.UNAUTHORIZED,
       "You are not allowed to update this issue",
     );
   } else {
@@ -131,7 +131,7 @@ WHERE
 const deleteIssueById = async (id: string, user: any) => {
   if (user.role !== MAINTAINER) {
     throw new AppError(
-      httpStatus.FORBIDDEN,
+      httpStatus.UNAUTHORIZED,
       "Only maintainers can delete issues",
     );
   }
