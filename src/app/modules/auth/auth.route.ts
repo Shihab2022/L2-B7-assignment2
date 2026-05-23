@@ -3,6 +3,7 @@ import { AuthController } from "./auth.controller";
 // import auth from '../../middlewares/auth';
 const router = express.Router();
 
+router.post("/signup", AuthController.signUpUser);
 router.post("/login", AuthController.loginUser);
 // router.post("/refresh-token", AuthController.genRefreshToken);
 // router.post("/forgot-password", AuthController.forgotPassword);

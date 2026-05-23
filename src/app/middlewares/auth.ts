@@ -4,6 +4,7 @@ import ApiError from "../errors/ApiError";
 import httpStatus from "http-status";
 import config from "../config";
 import { jwtVerify } from "../../utils/jwtHelper";
+import AppError from "../errors/ApiError";
 
 const auth = (...roles: string[]) => {
   const errorMessage = "You are not authorized";
@@ -15,11 +16,11 @@ const auth = (...roles: string[]) => {
     try {
       const token = req?.headers?.authorization;
       if (!token) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, errorMessage);
+        throw new AppError(httpStatus.UNAUTHORIZED, errorMessage);
       }
       const verifyUser = jwtVerify(token, config.jwt_access_secret as Secret);
       if (roles.length && !roles.includes(verifyUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, errorMessage);
+        throw new AppError(httpStatus.FORBIDDEN, errorMessage);
       }
       req.user = verifyUser;
       next();

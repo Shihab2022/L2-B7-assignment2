@@ -14,7 +14,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   //     maxAge: 90 * 24 * 60 * 60 * 1000,
   //   });
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: 201,
     success: true,
     message: "Login successfully",
     data: {
@@ -24,6 +24,17 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const signUpUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthServices.signUpUser(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "User registered successfully",
+    data: result,
+  });
+});
+
 export const AuthController = {
   loginUser,
+  signUpUser,
 };
