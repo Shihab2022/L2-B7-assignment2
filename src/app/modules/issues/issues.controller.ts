@@ -15,6 +15,14 @@ const createIssues = catchAsync(
     });
   },
 );
+const getAllIssues = catchAsync(async (req: Request, res: Response) => {
+  const result = await IssuesServices.getAllIssues(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result,
+  });
+});
 const getIssueById = catchAsync(async (req: Request, res: Response) => {
   const result = await IssuesServices.getIssueById("1");
   sendResponse(res, {
@@ -28,4 +36,5 @@ const getIssueById = catchAsync(async (req: Request, res: Response) => {
 export const IssuesController = {
   createIssues,
   getIssueById,
+  getAllIssues,
 };

@@ -5,7 +5,7 @@ const sendResponse = <T>(
   jsonData: {
     statusCode: number;
     success: boolean;
-    message: string;
+    message?: string;
     data: T | null | undefined;
   },
 ) => {
