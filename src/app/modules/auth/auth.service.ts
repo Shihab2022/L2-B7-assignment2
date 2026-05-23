@@ -5,6 +5,8 @@ import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { CONTRIBUTOR } from "../../../constant/common";
+import { generateJwtToken } from "../../../utils/jwtHelper";
+import { Secret } from "jsonwebtoken";
 
 const signUpUser = async (payload: SIGN_UP_USER_PAYLOAD) => {
   const { email, password, role = CONTRIBUTOR, name } = payload;
@@ -55,38 +57,43 @@ const signUpUser = async (payload: SIGN_UP_USER_PAYLOAD) => {
   return createdUser;
 };
 const loginUser = async (payload: { email: string; password: string }) => {
-  //   const isUserExit = await prisma.user.findUniqueOrThrow({
-  //     where: {
-  //       email: payload.email,
-  //     },
-  //   });
-  //   const isPasswordCorrect = await bcrypt.compare(
-  //     payload.password,
-  //     isUserExit.password
-  //   );
-  //   if (!isPasswordCorrect) {
-  //     throw new Error("Password is not correct!");
-  //   }
-  //   const tokenData = {
-  //     email: isUserExit.email,
-  //     userId: isUserExit?.id,
-  //     role: isUserExit.role,
-  //   };
-  //   const accessToken = generateJwtToken(
-  //     tokenData,
-  //     config.jwt_access_secret as Secret,
-  //     config.jwt_access_expire_in as string
-  //   );
-  //   const refreshToken = generateJwtToken(
-  //     tokenData,
-  //     config.jwt_refresh_secret as Secret,
-  //     config.jwt_refresh_expire_in as string
-  //   );
-  //   return {
-  //     accessToken,
-  //     refreshToken,
-  //     needPasswordChange: isUserExit.needPasswordChange,
-  //   };
+  const existingUser = await pool.query(
+    `SELECT * FROM users WHERE email = $1`,
+    [payload.email],
+  );
+  if (existingUser.rows.length === 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid email or password");
+  }
+  const isPasswordCorrect = await bcrypt.compare(
+    payload.password,
+    existingUser.rows[0].password,
+  );
+  if (!isPasswordCorrect) {
+    throw new Error("Password is not correct!");
+  }
+  const userInfo = existingUser.rows[0];
+  const tokenData = {
+    email: userInfo.email,
+    userId: userInfo?.id,
+    role: userInfo.role,
+  };
+  const accessToken = generateJwtToken(
+    tokenData,
+    config.jwt_access_secret as Secret,
+    config.jwt_access_expire_in as string,
+  );
+
+  return {
+    token: accessToken,
+    user: {
+      id: userInfo.id,
+      name: userInfo.name,
+      email: userInfo.email,
+      role: userInfo.role,
+      created_at: userInfo.created_at,
+      updated_at: userInfo.updated_at,
+    },
+  };
 };
 export const AuthServices = {
   loginUser,

@@ -14,13 +14,10 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   //     maxAge: 90 * 24 * 60 * 60 * 1000,
   //   });
   sendResponse(res, {
-    statusCode: 201,
+    statusCode: httpStatus.OK,
     success: true,
     message: "Login successfully",
-    data: {
-      accessToken: "accessToken",
-      needPasswordChange: "needPasswordChange",
-    },
+    data: result,
   });
 });
 
