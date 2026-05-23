@@ -45,10 +45,23 @@ ORDER BY
   return result.rows;
 };
 const getIssueById = async (id: string) => {
-  return {
-    message:
-      "Issue retrieved successfully lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, doloremque.",
-  };
+  const query = `
+SELECT 
+    i.*,
+    jsonb_build_object(
+        'id', u.id,
+        'name', u.name,
+        'role', u.role
+    ) AS reporter
+FROM issues i
+INNER JOIN users u 
+    ON i.reporter_id = u.id
+WHERE
+    i.id = $1
+`;
+
+  const result = await pool.query(query, [id]);
+  return result.rows[0];
 };
 export const IssuesServices = {
   createIssues,

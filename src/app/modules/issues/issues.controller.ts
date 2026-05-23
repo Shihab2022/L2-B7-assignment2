@@ -8,7 +8,7 @@ const createIssues = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const result = await IssuesServices.createIssues(req.body, req.user);
     sendResponse(res, {
-      statusCode: httpStatus.OK,
+      statusCode: httpStatus.CREATED,
       success: true,
       message: "Issues created successfully",
       data: result,
@@ -24,11 +24,11 @@ const getAllIssues = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getIssueById = catchAsync(async (req: Request, res: Response) => {
-  const result = await IssuesServices.getIssueById("1");
+  const issueId = req.params.id;
+  const result = await IssuesServices.getIssueById(issueId as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Issue retrieved successfully",
     data: result,
   });
 });
