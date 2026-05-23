@@ -4,22 +4,17 @@ import sendResponse from "../../../utils/sendResponse";
 import httpStatus from "http-status";
 import { IssuesServices } from "./issues.service";
 
-const createIssues = catchAsync(async (req: Request, res: Response) => {
-  const result = await IssuesServices.createIssues(req.body);
-  //   const { refreshToken, accessToken, needPasswordChange } = result;
-  //   res.cookie("refreshToken", refreshToken, {
-  //     secure: true,
-  //     httpOnly: true,
-  //     sameSite: "strict",
-  //     maxAge: 90 * 24 * 60 * 60 * 1000,
-  //   });
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Issues created successfully",
-    data: {},
-  });
-});
+const createIssues = catchAsync(
+  async (req: Request & { user?: any }, res: Response) => {
+    const result = await IssuesServices.createIssues(req.body, req.user);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Issues created successfully",
+      data: result,
+    });
+  },
+);
 const getIssueById = catchAsync(async (req: Request, res: Response) => {
   const result = await IssuesServices.getIssueById("1");
   sendResponse(res, {

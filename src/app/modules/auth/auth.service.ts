@@ -73,8 +73,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
   }
   const userInfo = existingUser.rows[0];
   const tokenData = {
-    email: userInfo.email,
-    userId: userInfo?.id,
+    name: userInfo.name,
+    id: userInfo?.id,
     role: userInfo.role,
   };
   const accessToken = generateJwtToken(
